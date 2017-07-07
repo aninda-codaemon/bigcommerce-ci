@@ -53,16 +53,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                  foreach ($all_orders as $order) { ?>                    
                                     <tr>
                                         <td><a href="javascript: void(0)" >#<?php echo $order['id']; ?></a></td>
-                                        <td><?= date("M d, h:sa", strtotime($order['order_create_date'])) ?></td>
+                                        <td><?= date("M d, h:sa", strtotime($order['date_created'])) ?></td>
                                         <td>
                                             <address>
                                                 <strong>
-                                                    <?php echo $order['customer_firstname'] . ' ' . $order['customer_lastname']; ?>
+                                                    <?php echo $order['billing_address']['first_name'] . ' ' . $order['billing_address']['last_name']; ?>
                                                     <!--<a class="red-text" target="_blank" href="https://www.knowthycustomer.com/f/search/person?age=&city=&fn=<?= $order['customer']['first_name'] ?>&ln=<?= $order['customer']['last_name'] ?>&mn=&state=&address=&phone=&email=&ip="><?php echo $order['customer']['first_name'] . ' ' . $order['customer']['last_name']; ?></a>-->
                                                 </strong>
                                                 <br><span class="font-normal">
                                                 <?php
-                                                    echo $order['shipping_street'] . ', ' . $order['shipping_city'] . '<br>' . $order['shipping_region'] . ', ' . $order['shipping_country_id'] . ' - ' . $order['shipping_postcode'];
+                                                    echo $order['billing_address']['street_1'] . ', ' . $order['billing_address']['city'] . '<br>' . $order['billing_address']['state'] . ', ' . $order['billing_address']['country'] . ' - ' . $order['billing_address']['zip'];
                                                 ?></span>
                                             </address>
                                         </td>
@@ -70,50 +70,58 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                         <td>
                                             <?php 
 
-                                                $order_description = json_decode(unserialize($order['order_description']), true);
+                                                // $order_description = json_decode(unserialize($order['order_description']), true);
                                                 
                                                 $color = '';
                                                 $pay_txt = '';
                                                 $payment = $order_description['total_due'];
 
-                                                if($payment == 0) {
-                                                    $color = 'green';
-                                                    $pay_txt = 'Paid';
-                                                } else if($payment == 'partially_refunded') {
-                                                    $color = 'yellow';
-                                                } else if($payment < $order['base_grand_total']) {
-                                                    $color = 'grey';
-                                                    $pay_txt = 'Partially Paid';
-                                                } else if($payment == 'pending') {
-                                                    $color = 'orange';
-                                                } else if($payment == 'refunded') {
-                                                    $color = 'blue';
-                                                } else if($payment == $order['base_grand_total']) {
-                                                    $color = 'red';
-                                                    $pay_txt = 'Payment Due';
-                                                } else if($payment == 'voided') {
-                                                    $color = 'lightblue';
-                                                }
+                                                // if($payment == 0) {
+                                                //     $color = 'green';
+                                                //     $pay_txt = 'Paid';
+                                                // } else if($payment == 'partially_refunded') {
+                                                //     $color = 'yellow';
+                                                // } else if($payment < $order['base_grand_total']) {
+                                                //     $color = 'grey';
+                                                //     $pay_txt = 'Partially Paid';
+                                                // } else if($payment == 'pending') {
+                                                //     $color = 'orange';
+                                                // } else if($payment == 'refunded') {
+                                                //     $color = 'blue';
+                                                // } else if($payment == $order['base_grand_total']) {
+                                                //     $color = 'red';
+                                                //     $pay_txt = 'Payment Due';
+                                                // } else if($payment == 'voided') {
+                                                //     $color = 'lightblue';
+                                                // }
                                             ?>
-                                            <span class="tag <?=$color?>"><i class="fa fa-clock-o" aria-hidden="true"></i> <?=$pay_txt?></span>
+                                            <span class="tag <?=$color?>"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $order['status'] ?></span>
                                         <td>
                                             <?php
                                                 //print_r(json_decode(unserialize($order['order_description']), true));
-                                                $fullfill = is_null($order_description['status']) ? 'unfulfilled' : $order_description['status'];
-                                                if($fullfill == 'processing') {
-                                                    $color = 'red';
-                                                } else if($fullfill == 'partial') {
-                                                    $color = 'grey';
-                                                } else if($fullfill == 'unfulfilled') {
-                                                    $color = 'yellow';
-                                                }else if($fullfill == 'complete') {
-                                                    $color = 'green';
-                                                }
+                                                // $fullfill = is_null($order_description['status']) ? 'unfulfilled' : $order_description['status'];
+                                                // if($fullfill == 'processing') {
+                                                //     $color = 'red';
+                                                // } else if($fullfill == 'partial') {
+                                                //     $color = 'grey';
+                                                // } else if($fullfill == 'unfulfilled') {
+                                                //     $color = 'yellow';
+                                                // }else if($fullfill == 'complete') {
+                                                //     $color = 'green';
+                                                // }
                                             ?>
-                                            <span class="tag <?=$color?>"><?=$fullfill?></span>
+                                            <span class="tag <?=$color?>"><?php echo $order['status'] ?></span>
                                         </td>
-                                        <td><?= $order['base_grand_total'] ?></td>
+                                        <td><?= $order['total_inc_tax'] ?></td>
                                         <td>
+
+                                            <?php
+                                                $b_address = $order['b_address1'].' '.$order['b_city'].' '.$order['b_province'].' '.$order['b_zip'].' '.$order['b_country'];
+                                                $s_address = $order['s_address1'].' '.$order['s_city'].' '.$order['s_province'].' '.$order['s_zip'].' '.$order['s_country'];
+                                                // $check_link = 'https://www.knowthycustomer.com/f/generate/fraud?billing_first_name='.((isset($order['b_first_name']) && !empty($order['b_first_name']))?$order['b_first_name']:'Not Available').'&billing_middle_name=&billing_last_name='.((isset($order['b_last_name']) && !empty($order['b_last_name']))?$order['b_last_name']:'Not Available').'&billing_address='.((isset($b_address) && !empty($b_address))?$b_address:'Not Available').'&billing_ip_address='.$ip_address.'&billing_email='.((isset($order['contact_email']) && !empty($order['contact_email']))?$order['contact_email']:'Not Available').'&billing_phone='.((isset($order['contact_email']) && !empty($order['b_phone']))?$order['b_phone']:'Not Available').'&shipping_first_name='.((isset($order['s_first_name']) && !empty($order['s_first_name']))?$order['s_first_name']:'Not Available').'&shipping_middle_name=&shipping_last_name='.((isset($order['s_last_name']) && !empty($order['s_last_name']))?$order['s_last_name']:'Not Available').'&shipping_address='.((isset($s_address) && !empty($s_address))?$s_address:'Not Available').'&shipping_email='.((isset($order['contact_email']) && !empty($order['contact_email']))?$order['contact_email']:'Not Available').'&shipping_phone='.((isset($order['s_phone']) && !empty($order['s_phone']))?$order['s_phone']:'Not Available');
+                                                $check_link = 'https://www.knowthycustomer.com/f/generate/fraud?billing_first_name='.$order['b_first_name'].'&billing_middle_name=&billing_last_name='.((isset($order['b_last_name']) && !empty($order['b_last_name']))?$order['b_last_name']:'Not Available').'&billing_address='.((isset($b_address) && !empty(trim($b_address)))?$b_address:'Not Available').'&billing_ip_address='.$ip_address.'&billing_email='.$order['contact_email'].'&billing_phone='.$order['b_phone'].'&shipping_first_name='.$order['s_first_name'].'&shipping_middle_name=&shipping_last_name='.$order['s_last_name'].'&shipping_address='.$s_address.'&shipping_email='.$order['contact_email'].'&shipping_phone='.$order['s_phone'];
+                                            ?>
+                                        
                                             <button class="btn-Blue" onclick="">Run Fraud Check <i class="fa fa-share-square-o" aria-hidden="true"></i></button>
                                         </td>
                                     </tr>
@@ -125,7 +133,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         </table>
 
                         <!-- Pagination Options -->
-                        <div id="navdiv">                            
+                        <!-- <div id="navdiv">                            
                             
                             <p class="display-none" id="ocount"></p>
                             <?php
@@ -141,7 +149,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             <button data-href="<?php echo ($next_page); ?>" style="text-align:right;" class="btn-Blue page-link" id="nextpage">Next</button>
                             <?php } ?>
 
-                        </div>
+                        </div> -->
                         <!-- Pagination Options -->
 
                     </div>

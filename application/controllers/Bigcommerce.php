@@ -192,8 +192,9 @@
 	    }
 
 		public function orders(){
-			echo '<pre>';
-			echo 'Store context: ' . $this->session->userdata('store_context');
+			error_reporting(E_ERROR);
+			/*echo '<pre>';
+			echo 'Store context: ' . $this->session->userdata('store_context');*/
 
 			$store_context = $this->session->userdata('store_context');
 
@@ -206,7 +207,7 @@
 			//get store information from context
 			$store_info = $this->app->get_store_info_by_context($store_context);
 
-			print_r($store_info);
+			//print_r($store_info);
 
 			$api_url = 'https://api.bigcommerce.com/stores/ogyyko1meq/v2/orders.json';
 			$header = array('Content-Type: application/json', 'X-Auth-Client: mwshyzp578qge171a6csxn4st4836si', 'X-Auth-Token: '.$store_info['store_token']);
@@ -226,14 +227,14 @@
 				//print_r($responseText);
 
 				//$all = (object) $allOrders;
-				print_r(json_decode($allOrders, true));
+				//print_r(json_decode($allOrders, true));
 				//echo gettype(json_decode($all, TRUE));
 
 				//$ft = json_decode(html_entity_decode(urldecode(filter_input($allOrders, 'ft', FILTER_SANITIZE_STRING))));
 				//var_dump($ft);
 				$responseOrders = json_decode($allOrders, true);
 
-				$this->load->view('layout/order_listing', ['all_orders' => $responseOrders]);
+				$this->load->view('layout/order_listing', ['all_orders' => $responseOrders, 'lastid' => 0]);
 			}
 		}
 
