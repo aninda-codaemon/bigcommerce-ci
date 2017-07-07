@@ -231,6 +231,9 @@
 
 				//$ft = json_decode(html_entity_decode(urldecode(filter_input($allOrders, 'ft', FILTER_SANITIZE_STRING))));
 				//var_dump($ft);
+				$responseOrders = json_decode($allOrders, true);
+
+				$this->load->view('layout/order_listing', ['all_orders' => $responseOrders]);
 			}
 		}
 

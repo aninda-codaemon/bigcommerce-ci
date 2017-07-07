@@ -52,7 +52,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                 <?php if($lastid == 0) {
                                  foreach ($all_orders as $order) { ?>                    
                                     <tr>
-                                        <td><a href="javascript: void(0)" >#<?php echo $order['increment_id']; ?></a></td>
+                                        <td><a href="javascript: void(0)" >#<?php echo $order['id']; ?></a></td>
                                         <td><?= date("M d, h:sa", strtotime($order['order_create_date'])) ?></td>
                                         <td>
                                             <address>
