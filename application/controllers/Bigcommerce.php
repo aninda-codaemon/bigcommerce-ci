@@ -193,7 +193,7 @@
 
 		public function orders(){
 			error_reporting(E_ERROR);
-			echo '<pre>';
+			//echo '<pre>';
 			// echo 'Store context: ' . $this->session->userdata('store_context');
 
 			$store_context = $this->session->userdata('store_context');
@@ -252,7 +252,7 @@
 					$responseOrders[] = $row;
 				}
 
-				print_r($responseOrders);
+				//print_r($responseOrders);
 
 				//die();
 
