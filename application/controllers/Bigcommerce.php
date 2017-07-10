@@ -193,8 +193,8 @@
 
 		public function orders(){
 			error_reporting(E_ERROR);
-			/*echo '<pre>';
-			echo 'Store context: ' . $this->session->userdata('store_context');*/
+			echo '<pre>';
+			// echo 'Store context: ' . $this->session->userdata('store_context');
 
 			$store_context = $this->session->userdata('store_context');
 
@@ -232,7 +232,29 @@
 
 				//$ft = json_decode(html_entity_decode(urldecode(filter_input($allOrders, 'ft', FILTER_SANITIZE_STRING))));
 				//var_dump($ft);
-				$responseOrders = json_decode($allOrders, true);
+				$tmp = json_decode($allOrders, true);
+
+				$responseOrders = array();
+
+				foreach ($tmp as $row) {
+					# code...
+					//print_r($row);
+
+					if (!empty($row['shipping_addresses'])){
+						$ship_url = $row['shipping_addresses']['url'];
+						$header = array('Accept: application/json', 'X-Auth-Client: mwshyzp578qge171a6csxn4st4836si', 'X-Auth-Token: '.$store_info['store_token']);
+						$method = 'GET';
+						$params = [];
+						$shipAddress = $this->_call_api($ship_url, $method, $params, $header);						
+						$row['ship_addr'] = json_decode($shipAddress, true);
+					}
+
+					$responseOrders[] = $row;
+				}
+
+				print_r($responseOrders);
+
+				//die();
 
 				$this->load->view('layout/order_listing', ['all_orders' => $responseOrders, 'lastid' => 0]);
 			}
