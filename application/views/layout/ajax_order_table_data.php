@@ -36,7 +36,7 @@
                                                 
                                                 $color = '';
                                                 $pay_txt = '';
-                                                $payment = $order_description['total_due'];
+                                                $payment = isset($order_description['total_due'])?$order_description['total_due']:0;
 
                                                 if($payment == 0) {
                                                     $color = 'green';
@@ -76,7 +76,16 @@
                                         </td>
                                         <td><?= $order['base_grand_total'] ?></td>
                                         <td>
-                                            <button class="btn-Blue" onclick="">Run Fraud Check <i class="fa fa-share-square-o" aria-hidden="true"></i></button>
+                                            <?php
+                                                //echo '<pre>';print_r($order);
+
+                                                $b_address = $order['billing_street'].' '.$order['billing_city'].' '.$order['billing_region'].' '.$order['billing_postcode'].' '.$order['billing_country_id'];
+                                                $s_address = $order['shipping_street'].' '.$order['shipping_city'].' '.$order['shipping_region'].' '.$order['shipping_postcode'].' '.$order['shipping_country_id'];
+                                                // $check_link = 'https://www.knowthycustomer.com/f/generate/fraud?billing_first_name='.((isset($order['b_first_name']) && !empty($order['b_first_name']))?$order['b_first_name']:'Not Available').'&billing_middle_name=&billing_last_name='.((isset($order['b_last_name']) && !empty($order['b_last_name']))?$order['b_last_name']:'Not Available').'&billing_address='.((isset($b_address) && !empty($b_address))?$b_address:'Not Available').'&billing_ip_address='.$ip_address.'&billing_email='.((isset($order['contact_email']) && !empty($order['contact_email']))?$order['contact_email']:'Not Available').'&billing_phone='.((isset($order['contact_email']) && !empty($order['b_phone']))?$order['b_phone']:'Not Available').'&shipping_first_name='.((isset($order['s_first_name']) && !empty($order['s_first_name']))?$order['s_first_name']:'Not Available').'&shipping_middle_name=&shipping_last_name='.((isset($order['s_last_name']) && !empty($order['s_last_name']))?$order['s_last_name']:'Not Available').'&shipping_address='.((isset($s_address) && !empty($s_address))?$s_address:'Not Available').'&shipping_email='.((isset($order['contact_email']) && !empty($order['contact_email']))?$order['contact_email']:'Not Available').'&shipping_phone='.((isset($order['s_phone']) && !empty($order['s_phone']))?$order['s_phone']:'Not Available');
+                                                $check_link = 'https://www.knowthycustomer.com/f/generate/fraud?billing_first_name='.$order['billing_firstname'].'&billing_middle_name=&billing_last_name='.((isset($order['billing_lastname']) && !empty($order['billing_lastname']))?$order['billing_lastname']:'Not Available').'&billing_address='.((isset($b_address) && !empty(trim($b_address)))?$b_address:'Not Available').'&billing_ip_address='.(isset($ip_address)?$ip_address:'').'&billing_email='.$order['billing_email'].'&billing_phone='.$order['billing_telephone'].'&shipping_first_name='.$order['shipping_firstname'].'&shipping_middle_name=&shipping_last_name='.$order['shipping_lastname'].'&shipping_address='.$s_address.'&shipping_email='.$order['shipping_email'].'&shipping_phone='.$order['shipping_telephone'];
+                                            ?>
+                                                                                    
+                                            <button class="btn-Blue" onclick="opennewtab('<?php echo $check_link; ?>')">Run Fraud Check <i class="fa fa-share-square-o" aria-hidden="true"></i></button>
                                         </td>
                                     </tr>
                                 <?php } ?>

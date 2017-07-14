@@ -4,7 +4,7 @@
 	*/
 	class Bigcommerce extends CI_Controller
 	{
-		
+		protected $_per_page;
 		public function __construct()
 		{
 			# code...
@@ -12,6 +12,9 @@
 			$this->load->helper('url');
 			$this->load->model('App_model', 'app');
 			$this->load->model('User_model', 'user');
+			$this->load->model('Order_model', 'order');
+
+			$this->_per_page = 50;
 		}
 
 		public function index(){
@@ -62,10 +65,10 @@
 
 			if ($storeExist > 0){
 				//update the store data in tables				
-				echo $storeupdate = $this->app->update_store_details($insertData);
+				$storeupdate = $this->app->update_store_details($insertData);
 			}else{
 				//insert the store data in tables				
-				echo $storeid = $this->app->save_store_details($insertData);	
+				$storeid = $this->app->save_store_details($insertData);	
 			}
 			
 			$this->session->set_userdata('store_context', $dataToken['context']);
@@ -206,7 +209,6 @@
 
 			//get store information from context
 			$store_info = $this->app->get_store_info_by_context($store_context);
-
 			//print_r($store_info);
 
 			$api_url = 'https://api.bigcommerce.com/stores/ogyyko1meq/v2/orders.json';
@@ -232,13 +234,13 @@
 
 				//$ft = json_decode(html_entity_decode(urldecode(filter_input($allOrders, 'ft', FILTER_SANITIZE_STRING))));
 				//var_dump($ft);
+
 				$tmp = json_decode($allOrders, true);
 
 				$responseOrders = array();
 
 				foreach ($tmp as $row) {
-					# code...
-					//print_r($row);
+					# code...					
 
 					if (!empty($row['shipping_addresses'])){
 						$ship_url = $row['shipping_addresses']['url'];
@@ -249,15 +251,104 @@
 						$row['ship_addr'] = json_decode($shipAddress, true);
 					}
 
+					$orderArray			= array(
+												'store_id' => $store_info['id'],
+												'increment_id' => $row['id'],
+												'base_currency_code' => $row['default_currency_code'],
+												'customer_email' => $row['billing_address']['email'],
+												'customer_firstname' => $row['billing_address']['first_name'],
+												'customer_lastname' => $row['billing_address']['last_name'],
+												'customer_moddlename' => '',
+												'store_name' => '',
+												'order_create_date' => $row['date_created'],
+												'shipping_description' => '',
+												'base_grand_total' => $row['total_inc_tax'],
+												'discount_amount' => $row['discount_amount'],
+												'total_qty_ordered' => $row['items_total'],
+												'customer_id' => $row['customer_id'],
+												'order_description' => serialize(json_encode($row))
+											);
+
+					$addressArray		= array(
+												'shipping_region' => $row['ship_addr'][0]['state'],
+												'shipping_postcode' => $row['ship_addr'][0]['zip'],
+												'shipping_firstname' => $row['ship_addr'][0]['first_name'],
+												'shipping_lastname' => $row['ship_addr'][0]['last_name'],
+												'shipping_street' => $row['ship_addr'][0]['street_1'],
+												'shipping_city' => $row['ship_addr'][0]['city'],
+												'shipping_email' => $row['ship_addr'][0]['email'],
+												'shipping_telephone' => $row['ship_addr'][0]['phone'],
+												'shipping_country_id' => $row['ship_addr'][0]['country'],											
+												'billing_region' => $row['billing_address']['state'],
+												'billing_postcode' => $row['billing_address']['zip'],
+												'billing_lastname' => $row['billing_address']['last_name'],
+												'billing_firstname' => $row['billing_address']['first_name'],
+												'billing_street' => $row['billing_address']['street_1'],
+												'billing_city' => $row['billing_address']['city'],
+												'billing_email' => $row['billing_address']['email'],
+												'billing_telephone' => $row['billing_address']['phone'],
+												'billing_country_id' => $row['billing_address']['country'],
+											);
+					
+					//check if order already exist or not
+					$order_exist 		= $this->order->check_order_exist_store_increment($store_info['id'], $row['id']); 
+
+					if ($order_exist > 0){
+						//update the order details
+						$this->order->update_order_details($orderArray, $addressArray, $store_info['id'], $row['id']);
+					}else{
+						//save the order details
+						$this->order->save_order_details($orderArray, $addressArray);
+					}
+
 					$responseOrders[] = $row;
 				}
 
 				//print_r($responseOrders);
-
 				//die();
 
-				$this->load->view('layout/order_listing', ['all_orders' => $responseOrders, 'lastid' => 0]);
+				//get all orders for the store
+				$page               		= 1;
+				//get total records        
+		        $total_activity     		= $this->order->get_total_order_store_by_store_id($store_info['id']);        
+		        $per_page           		= $this->_per_page;
+		        $total_page         		= floor($total_activity/$per_page);
+		        $current_page       		= ($page - 1) * $per_page;
+		        $next_page          		= $page + 1;
+
+		        $all_orders      			= $this->order->get_all_order_details_store($store_info['id'], $current_page, $per_page);		        
+
+				$this->load->view('layout/order_listing', ['all_orders' => $all_orders, 'lastid' => 0, 'total_page' => $total_page, 'current_page' => $page, 'next_page' => $next_page]);
 			}
+		}
+
+		public function ajax_get_order_page(){
+			$page               		= $this->input->post('page', true);;
+	        $store_context 				= $this->session->userdata('store_context');
+
+			//get store information from context
+			$store_info 				= $this->app->get_store_info_by_context($store_context);
+	        
+	        //get total records        
+	        $total_activity     		= $this->order->get_total_order_store_by_store_id($store_info['id']);
+	        $per_page           		= $this->_per_page;
+	        $total_page         		= floor($total_activity/$per_page);
+	        $current_page       		= ($page-1)*$per_page;
+	        $next_page          		= $page + 1;        
+	        
+	        $all_orders      			= $this->order->get_all_order_details_store($store_info['id'], $current_page, $per_page);
+
+	        $page_data          		= $this->load->view('layout/ajax_order_table_data', ['all_orders' => $all_orders, 'lastid' => 0, 'total_page' => $total_page, 'current_page' => $page, 'next_page' => $next_page], true);   
+
+	        $response           		= array(
+		                                    'total_activity' => $total_activity,
+		                                    'total_page' => $total_page,
+		                                    'current_page' => $page,
+		                                    'next_page' => $next_page,
+		                                    'page_data' => $page_data
+		                                );
+
+	        echo json_encode($response);
 		}
 
 		/**
