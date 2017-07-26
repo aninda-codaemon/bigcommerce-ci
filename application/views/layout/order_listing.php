@@ -36,6 +36,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     </ul>
 
                     <div class="card-section" id="order_data_container" >
+                        
                         <table class="table-customer" id="order_list">
                             <thead>
                                 <tr>
@@ -122,8 +123,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                 // $check_link = 'https://www.knowthycustomer.com/f/generate/fraud?billing_first_name='.((isset($order['b_first_name']) && !empty($order['b_first_name']))?$order['b_first_name']:'Not Available').'&billing_middle_name=&billing_last_name='.((isset($order['b_last_name']) && !empty($order['b_last_name']))?$order['b_last_name']:'Not Available').'&billing_address='.((isset($b_address) && !empty($b_address))?$b_address:'Not Available').'&billing_ip_address='.$ip_address.'&billing_email='.((isset($order['contact_email']) && !empty($order['contact_email']))?$order['contact_email']:'Not Available').'&billing_phone='.((isset($order['contact_email']) && !empty($order['b_phone']))?$order['b_phone']:'Not Available').'&shipping_first_name='.((isset($order['s_first_name']) && !empty($order['s_first_name']))?$order['s_first_name']:'Not Available').'&shipping_middle_name=&shipping_last_name='.((isset($order['s_last_name']) && !empty($order['s_last_name']))?$order['s_last_name']:'Not Available').'&shipping_address='.((isset($s_address) && !empty($s_address))?$s_address:'Not Available').'&shipping_email='.((isset($order['contact_email']) && !empty($order['contact_email']))?$order['contact_email']:'Not Available').'&shipping_phone='.((isset($order['s_phone']) && !empty($order['s_phone']))?$order['s_phone']:'Not Available');
                                                 $check_link = 'https://www.knowthycustomer.com/f/generate/fraud?billing_first_name='.$order['billing_firstname'].'&billing_middle_name=&billing_last_name='.((isset($order['billing_lastname']) && !empty($order['billing_lastname']))?$order['billing_lastname']:'Not Available').'&billing_address='.((isset($b_address) && !empty(trim($b_address)))?$b_address:'Not Available').'&billing_ip_address='.$ip_address.'&billing_email='.$order['billing_email'].'&billing_phone='.$order['billing_telephone'].'&shipping_first_name='.$order['shipping_firstname'].'&shipping_middle_name=&shipping_last_name='.$order['shipping_lastname'].'&shipping_address='.$s_address.'&shipping_email='.$order['shipping_email'].'&shipping_phone='.$order['shipping_telephone'];
                                             ?>
-                                        
+                                            
                                             <button class="btn-Blue" onclick="opennewtab('<?php echo $check_link; ?>')">Run Fraud Check <i class="fa fa-share-square-o" aria-hidden="true"></i></button>
+                                            
+                                            <a target="_blank" href="https://<?php echo str_replace('s/', '-', $store_info['store_context']); ?>.mybigcommerce.com/admin/index.php?ToDo=editOrder&orderId=<?php echo $order['increment_id']; ?>">Edit</a>
+                                            <a target="_blank" href="https://<?php echo str_replace('s/', '-', $store_info['store_context']); ?>.mybigcommerce.com/admin/index.php?ToDo=printOrderInvoice&orderId=<?php echo $order['increment_id']; ?>">Print Invoice</a>
+                                            <a target="_blank" href="https://<?php echo str_replace('s/', '-', $store_info['store_context']); ?>.mybigcommerce.com/admin/index.php?ToDo=printShipmentPackingSlips&orderId=<?php echo $order['increment_id']; ?>">Print Packing Slip</a>
+                                            <!--<a target="_blank" href="https://<?php echo str_replace('s/', '-', $store_info['store_context']); ?>.mybigcommerce.com/admin/index.php?ToDo=viewOrders#">Resend Invoice</a>-->
+                                            <a target="_blank" href="https://<?php echo str_replace('s/', '-', $store_info['store_context']); ?>.mybigcommerce.com/admin/index.php?ToDo=viewOrderMessages&orderId=<?php echo $order['increment_id']; ?>">Send Message</a>
+                                            <!--<a target="_blank" href="https://<?php echo str_replace('s/', '-', $store_info['store_context']); ?>.mybigcommerce.com/admin/remote.php?remoteSection=orders&w=viewOrderNotes&orderId=<?php echo $order['increment_id']; ?>">View Notes</a>-->
+                                            <!--<a target="_blank" href="https://<?php echo str_replace('s/', '-', $store_info['store_context']); ?>.mybigcommerce.com/admin/index.php?ToDo=viewOrders#">Ship Items</a>-->
                                         </td>
                                     </tr>
                                 <?php } ?>

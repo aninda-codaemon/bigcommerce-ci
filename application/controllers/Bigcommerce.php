@@ -318,7 +318,8 @@
 
 		        $all_orders      			= $this->order->get_all_order_details_store($store_info['id'], $current_page, $per_page);		        
 
-				$this->load->view('layout/order_listing', ['all_orders' => $all_orders, 'lastid' => 0, 'total_page' => $total_page, 'current_page' => $page, 'next_page' => $next_page]);
+				//$this->load->view('layout/order_listing', ['store_info' => $store_info, 'all_orders' => $all_orders, 'lastid' => 0, 'total_page' => $total_page, 'current_page' => $page, 'next_page' => $next_page]);
+				$this->load->view('layout/big_order_listing', ['store_info' => $store_info, 'all_orders' => $all_orders, 'lastid' => 0, 'total_page' => $total_page, 'current_page' => $page, 'next_page' => $next_page]);
 			}
 		}
 
@@ -338,7 +339,7 @@
 	        
 	        $all_orders      			= $this->order->get_all_order_details_store($store_info['id'], $current_page, $per_page);
 
-	        $page_data          		= $this->load->view('layout/ajax_order_table_data', ['all_orders' => $all_orders, 'lastid' => 0, 'total_page' => $total_page, 'current_page' => $page, 'next_page' => $next_page], true);   
+	        $page_data          		= $this->load->view('layout/ajax_order_table_data', ['store_info' => $store_info, 'all_orders' => $all_orders, 'lastid' => 0, 'total_page' => $total_page, 'current_page' => $page, 'next_page' => $next_page], true);   
 
 	        $response           		= array(
 		                                    'total_activity' => $total_activity,
