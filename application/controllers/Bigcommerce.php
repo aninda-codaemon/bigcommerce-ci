@@ -318,8 +318,10 @@
 
 		        $all_orders      			= $this->order->get_all_order_details_store($store_info['id'], $current_page, $per_page);		        
 
+		        //echo $this->input->ip_address().' IP';die();
+
 				//$this->load->view('layout/order_listing', ['store_info' => $store_info, 'all_orders' => $all_orders, 'lastid' => 0, 'total_page' => $total_page, 'current_page' => $page, 'next_page' => $next_page]);
-				$this->load->view('layout/big_order_listing', ['store_info' => $store_info, 'all_orders' => $all_orders, 'lastid' => 0, 'total_page' => $total_page, 'current_page' => $page, 'next_page' => $next_page]);
+				$this->load->view('layout/big_order_listing', ['store_info' => $store_info, 'all_orders' => $all_orders, 'lastid' => 0, 'total_page' => $total_page, 'current_page' => $page, 'next_page' => $next_page, 'ip_address' => $this->get_client_ip()]);
 			}
 		}
 
@@ -339,7 +341,7 @@
 	        
 	        $all_orders      			= $this->order->get_all_order_details_store($store_info['id'], $current_page, $per_page);
 
-	        $page_data          		= $this->load->view('layout/ajax_order_table_data', ['store_info' => $store_info, 'all_orders' => $all_orders, 'lastid' => 0, 'total_page' => $total_page, 'current_page' => $page, 'next_page' => $next_page], true);   
+	        $page_data          		= $this->load->view('layout/ajax_order_table_data', ['store_info' => $store_info, 'all_orders' => $all_orders, 'lastid' => 0, 'total_page' => $total_page, 'current_page' => $page, 'next_page' => $next_page, 'ip_address' => $this->get_client_ip()], true);   
 
 	        $response           		= array(
 		                                    'total_activity' => $total_activity,
@@ -385,7 +387,10 @@
 	    }
 	    
 	    // Function to get the client IP address
-	    function get_client_ip() {
+	    public function get_client_ip() {
+
+	    	return $this->input->ip_address();
+
 	           $ipaddress = '';
 	        if ($_SERVER['HTTP_CLIENT_IP'])
 	            $ipaddress = $_SERVER['HTTP_CLIENT_IP'];

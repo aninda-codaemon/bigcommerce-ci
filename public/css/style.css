@@ -84,3 +84,14 @@ td button {
     width: 1024px !important;
     margin: 0 20px !important;
 }
+
+.custom-dropdown-menu {
+    margin: 0;
+    padding: 0;
+    left: -112px !important;
+}
+
+.custom-dropdown-menu li a:hover {
+    background: #72cdfa !important;
+    color: #FFF;
+}
