@@ -23,7 +23,6 @@
 		            </div>
 		            <?php
 		            	//echo '<pre>';print_r($all_orders);
-
 		            ?>
 
 		            <div id="order_data_container" >
@@ -103,6 +102,7 @@
 				                              	<li><a href="https://<?php echo str_replace('s/', '-', $store_info['store_context']); ?>.mybigcommerce.com/admin/index.php?ToDo=printOrderInvoice&orderId=<?php echo $order['increment_id']; ?>" target="_blank">Print Invoice</a></li>
 				                              	<li><a href="https://<?php echo str_replace('s/', '-', $store_info['store_context']); ?>.mybigcommerce.com/admin/index.php?ToDo=printShipmentPackingSlips&orderId=<?php echo $order['increment_id']; ?>" target="_blank">Print Packing Slip</a></li>
 				                              	<li><a href="https://<?php echo str_replace('s/', '-', $store_info['store_context']); ?>.mybigcommerce.com/admin/index.php?ToDo=viewOrderMessages&orderId=<?php echo $order['increment_id']; ?>" target="_blank">Send Message</a></li>
+				                              	<li><a class="shipTrigger" data-source="manual" data-prompt="order_action_menu" data-order-id="<?php echo $order['increment_id']; ?>" data-address-id="<?php echo $order_description['ship_addr'][0]['id'] ?>" data-shipping_address_count="<?php echo $order_description['shipping_address_count'] ?>" href="#">Ship Items</a></li>
 				                            </ul>
 				                        </div>
 
